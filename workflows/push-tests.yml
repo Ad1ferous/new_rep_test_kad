@@ -1,0 +1,33 @@
+name: Push tests.py File
+
+on:
+  workflow_dispatch: # Запуск вручную через вкладку Actions
+  push:
+    branches: [ main ] # Автозапуск при пуше в main
+
+jobs:
+  push-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Даем разрешение на запись в репозиторий
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Create or update tests.py file
+        run: |
+          echo "# Ваш тестовый код здесь" > tests.py
+          # ИЛИ скопируйте существующий файл, если он у вас есть
+          # cp /path/to/your/tests.py tests.py
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests.py
+          git commit -m "Add tests.py file via GitHub Actions" || echo "No changes to commit"
+          git push
